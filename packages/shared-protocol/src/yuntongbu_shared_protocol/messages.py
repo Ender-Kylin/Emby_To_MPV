@@ -109,9 +109,17 @@ class ClientErrorPayload(BasePayloadModel):
     detail: str
 
 
+class RoomMemberDescriptor(BasePayloadModel):
+    user_id: str
+    username: str
+    is_owner: bool
+    online: bool = False
+    device_count: int = 0
+
+
 class RoomSnapshotPayload(BasePayloadModel):
     state: PlaybackSessionState
-    members: list[dict[str, str | bool | None]] = Field(default_factory=list)
+    members: list[RoomMemberDescriptor] = Field(default_factory=list)
 
 
 class PlaybackCommandPayload(BasePayloadModel):

@@ -255,7 +255,8 @@ async def import_queue(
     except EmbyError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
 
-    replace_room_queue(
+    await _replace_room_queue(
+        session,
         room,
         [
             RoomQueueEntry(
@@ -352,7 +353,7 @@ async def clear_queue(
     session: AsyncSession = Depends(get_session),
     context: AppContext = Depends(get_context),
 ) -> PlaybackStateEnvelope:
-    replace_room_queue(room, [])
+    await _replace_room_queue(session, room, [])
     await session.commit()
     await _broadcast_snapshot(context, room)
     return PlaybackStateEnvelope(state=room_to_state(room))
@@ -426,6 +427,13 @@ async def _stop_writeback_if_enabled(context: AppContext, session: AsyncSession,
     if binding is None:
         return
     await context.emby_service.report_stopped(binding, room, position_ms=room.target_position_ms)
+
+
+async def _replace_room_queue(session: AsyncSession, room: Room, entries: list[RoomQueueEntry]) -> None:
+    replace_room_queue(room, [])
+    await session.flush()
+    if entries:
+        replace_room_queue(room, entries)
 
 
 async def _load_owner_binding(session: AsyncSession, room: Room, binding_id: str) -> EmbyBinding:
