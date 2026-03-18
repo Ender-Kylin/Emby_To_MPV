@@ -15,6 +15,8 @@ from yuntongbu_shared_protocol import (
     PlaybackState,
     RoomSnapshotMessage,
     RoomSnapshotPayload,
+    ServerNoticeMessage,
+    ServerNoticePayload,
 )
 
 from ..models import EmbyBinding, Room, RoomMember, RoomQueueEntry, User, new_uuid
@@ -91,6 +93,27 @@ async def get_room(
 ) -> RoomResponse:
     room = await get_room_for_user(room_id, user, session)
     return room_to_response(room, current_user_id=user.id)
+
+
+@router.delete("/{room_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_room(
+    room_id: str,
+    room: Room = Depends(ensure_room_owner),
+    session: AsyncSession = Depends(get_session),
+    context: AppContext = Depends(get_context),
+) -> None:
+    await context.connections.broadcast(
+        room.id,
+        ServerNoticeMessage(
+            payload=ServerNoticePayload(
+                level="warning",
+                message="This room was deleted by the owner.",
+            )
+        ),
+    )
+    await session.delete(room)
+    await session.commit()
+    await context.connections.disconnect_room(room.id)
 
 
 @router.post("/{room_id}/client-handoff", response_model=ClientHandoffCreateResponse)

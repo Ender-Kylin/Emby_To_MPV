@@ -95,6 +95,14 @@ class ConnectionManager:
                 if not self._room_index[connection.room_id]:
                     self._room_index.pop(connection.room_id, None)
 
+    async def disconnect_room(self, room_id: str) -> None:
+        for connection in await self.room_clients(room_id):
+            try:
+                await connection.websocket.close()
+            except Exception:
+                pass
+            await self.disconnect(connection)
+
     async def room_clients(self, room_id: str) -> list[ConnectedClient]:
         async with self._lock:
             ids = list(self._room_index.get(room_id, set()))

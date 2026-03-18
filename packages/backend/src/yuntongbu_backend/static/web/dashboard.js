@@ -178,8 +178,29 @@ function renderRooms(rooms) {
       window.location.href = `/app/room/${room.id}`;
     });
     actions.append(openButton);
+
+    if (room.is_owner) {
+      const deleteButton = el("button", "ghost", "Delete Room");
+      deleteButton.type = "button";
+      deleteButton.addEventListener("click", () => deleteRoom(room));
+      actions.append(deleteButton);
+    }
     entry.append(left, actions);
     roomListNode.append(entry);
+  }
+}
+
+async function deleteRoom(room) {
+  if (!window.confirm(`Delete room "${room.name}"? This will disconnect all clients in the room.`)) {
+    return;
+  }
+  setStatus(statusNode, "Deleting room...");
+  try {
+    await apiFetch(`/rooms/${room.id}`, { method: "DELETE" });
+    await loadRooms();
+    setStatus(statusNode, "Room deleted.", "success");
+  } catch (error) {
+    setStatus(statusNode, error.message, "error");
   }
 }
 
