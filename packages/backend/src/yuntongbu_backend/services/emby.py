@@ -181,6 +181,7 @@ class EmbyService:
                     "api_key": session.access_token,
                 },
             )
+        media_url = self._rewrite_stream_host(media_url)
 
         return ResolvedPlayback(
             item_id=item_id,
@@ -414,6 +415,21 @@ class EmbyService:
         query = dict(parse_qsl(parsed.query))
         query.update(params)
         return urlunparse(parsed._replace(query=urlencode(query)))
+
+    def _rewrite_stream_host(self, url: str) -> str:
+        from_host = (self._settings.emby_stream_host_rewrite_from or "").strip().lower()
+        to_host = (self._settings.emby_stream_host_rewrite_to or "").strip()
+        if not from_host or not to_host:
+            return url
+
+        parsed = urlparse(url)
+        if not parsed.hostname or parsed.hostname.lower() != from_host:
+            return url
+
+        replacement_netloc = to_host
+        if parsed.port and ":" not in to_host:
+            replacement_netloc = f"{to_host}:{parsed.port}"
+        return urlunparse(parsed._replace(netloc=replacement_netloc))
 
     def _response_detail(self, response: httpx.Response) -> str:
         try:

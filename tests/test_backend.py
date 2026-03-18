@@ -381,23 +381,23 @@ def test_web_pages_are_served(client) -> None:
     login_page = client.get("/app/login")
     assert login_page.status_code == 200
     assert "text/html" in login_page.headers["content-type"]
-    assert "Web Console" in login_page.text
+    assert "网页控制台" in login_page.text
 
     register_page = client.get("/app/register")
     assert register_page.status_code == 200
-    assert "Create Account" in register_page.text
+    assert "创建账号" in register_page.text
 
     dashboard_page = client.get("/app/dashboard")
     assert dashboard_page.status_code == 200
-    assert "Emby Bindings" in dashboard_page.text
-    assert "Latest Validation Result" in dashboard_page.text
+    assert "Emby 绑定" in dashboard_page.text
+    assert "最近一次校验结果" in dashboard_page.text
 
     room_page = client.get("/app/room/example-room")
     assert room_page.status_code == 200
-    assert "Current Playback" in room_page.text
-    assert "Refresh Bindings" in room_page.text
-    assert "Search All" in room_page.text
-    assert "Room Queue" in room_page.text
+    assert "当前播放" in room_page.text
+    assert "刷新绑定" in room_page.text
+    assert "全局搜索" in room_page.text
+    assert "房间队列" in room_page.text
 
 
 def test_websocket_stays_connected_when_writeback_fails(client) -> None:

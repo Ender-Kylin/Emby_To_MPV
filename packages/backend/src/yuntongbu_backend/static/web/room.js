@@ -1,13 +1,14 @@
 import {
   apiFetch,
   buildWebSocketUrl,
+  displayPlaybackState,
   el,
   formatDuration,
   loadSession,
   logout,
   requireUser,
   setStatus,
-} from "/static/web/common.js";
+} from "/static/web/common.js?v=20260318-zh1";
 
 const roomId = window.location.pathname.split("/").pop();
 const statusNode = document.getElementById("status");
@@ -59,6 +60,19 @@ let browserPlayerActive = false;
 let browserPendingSeekMs = null;
 let sliderScrubbing = false;
 const browserDeviceId = getOrCreateBrowserDeviceId();
+
+const COMMAND_LABELS = {
+  play: "播放",
+  pause: "暂停",
+  stop: "停止",
+  seek: "跳转",
+};
+
+const SOURCE_KIND_LABELS = {
+  playlist: "播放列表",
+  boxset: "合集",
+  queue: "队列",
+};
 
 document.getElementById("play-button").addEventListener("click", () => issueCommand("play"));
 document.getElementById("pause-button").addEventListener("click", () => issueCommand("pause"));

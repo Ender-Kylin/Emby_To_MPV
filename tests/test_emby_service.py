@@ -123,3 +123,16 @@ async def test_authenticate_surfaces_invalid_credentials_message() -> None:
             )
         finally:
             await service.close()
+
+
+@pytest.mark.asyncio
+async def test_rewrite_stream_host_replaces_matching_emby_media_host() -> None:
+    service = make_service()
+    try:
+        rewritten = service._rewrite_stream_host(
+            "https://media.micu.hk/emby/Videos/674459/stream.mkv?static=true&api_key=test"
+        )
+    finally:
+        await service.close()
+
+    assert rewritten == "https://tv.micu.hk/emby/Videos/674459/stream.mkv?static=true&api_key=test"

@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     emby_client_name: str = "Yuntongbu"
     emby_device_name: str = "Yuntongbu Backend"
     emby_device_id: str = "yuntongbu-backend"
+    emby_stream_host_rewrite_from: str | None = "media.micu.hk"
+    emby_stream_host_rewrite_to: str | None = "tv.micu.hk"
     host: str = "0.0.0.0"
     port: int = 8000
 
