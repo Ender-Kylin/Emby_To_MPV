@@ -1,0 +1,35 @@
+[project]
+name = "yuntongbu"
+version = "0.1.0"
+description = "Backend and Windows client for synchronized mpv playback backed by Emby."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "yuntongbu-backend",
+  "yuntongbu-client",
+]
+
+[tool.uv.sources]
+yuntongbu-backend = { workspace = true }
+yuntongbu-client = { workspace = true }
+
+[tool.uv.workspace]
+members = [
+  "packages/backend",
+  "packages/client",
+  "packages/shared-protocol",
+]
+
+[dependency-groups]
+dev = [
+  "httpx>=0.28.1",
+  "pytest>=8.4.0",
+  "pytest-asyncio>=1.2.0",
+]
+packaging = [
+  "pyinstaller>=6.16.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

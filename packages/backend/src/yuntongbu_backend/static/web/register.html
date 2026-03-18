@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Yuntongbu Register</title>
+    <link rel="stylesheet" href="/static/web/styles.css?v=20260318-1">
+    <script type="module" src="/static/web/register.js?v=20260318-1"></script>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div class="hero-card">
+          <div class="chip">Create Account</div>
+          <h1 class="hero-title">Register a user before binding Emby and entering rooms</h1>
+          <p class="hero-copy">
+            Your account stores room memberships, Emby credentials, and playback management access.
+          </p>
+        </div>
+      </section>
+
+      <section class="auth-grid">
+        <div class="panel">
+          <h2>Register</h2>
+          <form id="register-form" class="stack">
+            <label class="stack">
+              <span>Username</span>
+              <input id="username" name="username" minlength="3" required>
+            </label>
+            <label class="stack">
+              <span>Email</span>
+              <input id="email" name="email" type="email" autocomplete="email">
+            </label>
+            <label class="stack">
+              <span>Password</span>
+              <input id="password" name="password" type="password" minlength="8" autocomplete="new-password" required>
+            </label>
+            <label class="stack">
+              <span>Confirm Password</span>
+              <input id="password-confirm" name="password-confirm" type="password" minlength="8" autocomplete="new-password" required>
+            </label>
+            <button type="submit">Register</button>
+          </form>
+          <p class="status-banner" id="status"></p>
+        </div>
+
+        <div class="panel">
+          <h2>Already registered?</h2>
+          <p class="muted">
+            Return to the login page if you already have an account.
+          </p>
+          <div class="stack">
+            <a href="/app/login">Back to login</a>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

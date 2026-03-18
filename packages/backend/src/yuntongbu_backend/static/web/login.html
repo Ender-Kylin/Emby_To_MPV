@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Yuntongbu Login</title>
+    <link rel="stylesheet" href="/static/web/styles.css?v=20260318-5">
+    <script type="module" src="/static/web/login.js?v=20260318-5"></script>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div class="hero-card">
+          <div class="chip">Web Console</div>
+          <h1 class="hero-title">Sign in to manage rooms, Emby bindings, and sync state</h1>
+          <p class="hero-copy">
+            The browser manages users, rooms, and media selection. Windows clients still handle local
+            `mpv` playback and synchronized playback execution.
+          </p>
+        </div>
+      </section>
+
+      <section class="auth-grid">
+        <div class="panel">
+          <h2>Login</h2>
+          <form id="login-form" class="stack">
+            <label class="stack">
+              <span>Username or Email</span>
+              <input id="username" name="username" autocomplete="username" required>
+            </label>
+            <label class="stack">
+              <span>Password</span>
+              <input id="password" name="password" type="password" autocomplete="current-password" required>
+            </label>
+            <button type="submit">Login</button>
+          </form>
+          <p class="status-banner" id="status"></p>
+        </div>
+
+        <div class="panel">
+          <h2>Need an account?</h2>
+          <p class="muted">
+            Register first, then add your Emby servers and join a sync room.
+          </p>
+          <div class="stack">
+            <a href="/app/register">Go to registration</a>
+            <a href="/docs" target="_blank" rel="noreferrer">Open backend API docs</a>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

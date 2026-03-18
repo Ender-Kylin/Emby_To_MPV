@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Yuntongbu Room</title>
+    <link rel="stylesheet" href="/static/web/styles.css?v=20260318-11">
+    <script type="module" src="/static/web/room.js?v=20260318-11"></script>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div class="hero-card">
+          <div class="inline">
+            <a href="/app/dashboard">Back to Dashboard</a>
+            <span class="chip" id="invite-chip">Invite -</span>
+            <span class="chip warn" id="owner-chip">Member View</span>
+          </div>
+          <h1 class="page-title" id="room-title">Loading room...</h1>
+          <p class="hero-copy" id="room-subtitle">Waiting for room state.</p>
+        </div>
+      </section>
+
+      <section class="room-grid">
+        <div class="room-main">
+          <article class="room-card">
+            <div class="section-header">
+              <div>
+                <h2 style="margin-bottom: 6px;">Current Playback</h2>
+                <div class="muted" id="current-media-meta">No media loaded.</div>
+              </div>
+              <div class="toolbar">
+                <span class="chip" id="playback-state-chip">stopped</span>
+                <span class="chip" id="writeback-chip">Writeback Off</span>
+              </div>
+            </div>
+
+            <div class="stat-strip">
+              <div class="stat-card">
+                <div class="stat-label">Media Title</div>
+                <div class="stat-value" id="current-media-title">Unselected</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">Progress</div>
+                <div class="stat-value" id="current-progress-text">0:00 / 0:00</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">Online Devices</div>
+                <div class="stat-value" id="device-count">0</div>
+              </div>
+            </div>
+
+            <div class="progress-box" style="margin-top: 18px;">
+              <input id="progress-slider" type="range" min="0" max="0" step="1000" value="0">
+              <div class="progress-line owner-only" id="seek-panel" hidden>
+                <div class="inline">
+                  <label class="inline" style="flex: 1 1 auto;">
+                    <span>Seek To</span>
+                    <input id="seek-seconds" type="number" min="0" value="0" style="max-width: 160px;">
+                  </label>
+                  <span class="muted">seconds</span>
+                </div>
+                <button id="seek-button" type="button">Sync Position</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="room-card owner-only" id="control-panel" hidden>
+            <div class="section-header">
+              <div>
+                <h2 style="margin-bottom: 6px;">Owner Controls</h2>
+                <div class="muted">These commands are broadcast to all connected mpv clients.</div>
+              </div>
+            </div>
+            <div class="toolbar">
+              <button id="play-button" type="button">Play</button>
+              <button id="pause-button" class="subtle" type="button">Pause</button>
+              <button id="stop-button" class="ghost" type="button">Stop</button>
+            </div>
+            <label class="inline" style="margin-top: 18px;">
+              <input id="writeback-toggle" type="checkbox" style="width: auto;">
+              <span>Enable Emby watch-progress writeback</span>
+            </label>
+          </article>
+
+          <article class="room-card" id="player-panel">
+            <div class="section-header">
+              <div>
+                <h2 style="margin-bottom: 6px;">Player Outputs</h2>
+                <div class="muted">Play in this browser, or hand off playback to the local tray client and mpv.</div>
+              </div>
+              <span class="chip" id="browser-player-chip">Browser Idle</span>
+            </div>
+
+            <div class="toolbar">
+              <button id="start-browser-player-button" type="button">Play In Browser</button>
+              <button id="stop-browser-player-button" class="ghost" type="button">Stop Browser Player</button>
+              <button id="launch-local-mpv-button" class="subtle" type="button">Open In Local mpv</button>
+            </div>
+
+            <div class="muted" id="local-helper-status" style="margin-top: 12px;">
+              The local player proxy starts from the browser protocol prompt. If the browser blocks it, use the manual launch link below.
+            </div>
+            <div id="local-protocol-panel" class="subpanel" style="margin-top: 14px;" hidden>
+              <div class="stack">
+                <div class="entry-title">Manual Local Client Launch</div>
+                <div class="muted">
+                  If the browser blocks automatic protocol launch, click the link below directly and allow the prompt.
+                </div>
+                <div class="button-row">
+                  <a id="local-protocol-link" class="subtle-link" href="#">Open Yuntongbu Client</a>
+                </div>
+              </div>
+            </div>
+
+            <video id="browser-player" class="browser-player" controls playsinline preload="metadata"></video>
+          </article>
+
+          <article class="room-card owner-only" id="emby-panel" hidden>
+            <div class="section-header">
+              <div>
+                <h2 style="margin-bottom: 6px;">Switch Media from Emby</h2>
+                <div class="muted">Use global search across all libraries, or browse one library and import playlists or box sets.</div>
+              </div>
+              <button id="refresh-bindings-button" class="subtle" type="button">Refresh Bindings</button>
+            </div>
+
+            <div class="stack">
+              <label class="stack">
+                <span>Emby Binding</span>
+                <select id="binding-select"></select>
+              </label>
+              <label class="stack">
+                <span>Library</span>
+                <select id="library-select"></select>
+              </label>
+              <div class="inline">
+                <input id="item-search" placeholder="Global search across all Emby libraries">
+                <button id="search-button" class="subtle" type="button">Search All</button>
+                <button id="browse-button" class="ghost" type="button">Browse Library</button>
+                <button id="reload-items-button" class="ghost" type="button">Reload List</button>
+              </div>
+              <div class="muted">Search results can include videos, playlists, and box sets. Playlists and box sets can be imported into the room queue.</div>
+            </div>
+
+            <div id="media-list" class="media-list" style="margin-top: 18px;"></div>
+          </article>
+
+          <article class="room-card" id="queue-panel">
+            <div class="section-header">
+              <div>
+                <h2 style="margin-bottom: 6px;">Room Queue</h2>
+                <div class="muted" id="queue-meta">No imported playlist or box set yet.</div>
+              </div>
+              <button id="clear-queue-button" class="ghost owner-only" type="button" hidden>Clear Queue</button>
+            </div>
+            <div id="queue-list" class="media-list"></div>
+          </article>
+
+          <p class="status-banner" id="status"></p>
+        </div>
+
+        <aside class="room-side">
+          <article class="list-card">
+            <div class="section-header">
+              <div>
+                <h3 style="margin-bottom: 6px;">Members</h3>
+                <div class="muted">Only player clients count as online devices.</div>
+              </div>
+            </div>
+            <div id="member-list" class="member-list"></div>
+          </article>
+        </aside>
+      </section>
+    </main>
+  </body>
+</html>

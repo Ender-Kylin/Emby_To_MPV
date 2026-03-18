@@ -1,0 +1,22 @@
+[project]
+name = "yuntongbu-client"
+version = "0.1.0"
+description = "Windows tray client for synchronized mpv playback."
+requires-python = ">=3.12"
+dependencies = [
+  "httpx>=0.28.1",
+  "pydantic-settings>=2.10.1",
+  "PySide6>=6.9.0",
+  "websockets>=15.0.1",
+  "yuntongbu-shared-protocol",
+]
+
+[project.scripts]
+yuntongbu-client = "yuntongbu_client.app:main"
+
+[tool.uv.sources]
+yuntongbu-shared-protocol = { workspace = true }
+
+[build-system]
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Yuntongbu Dashboard</title>
+    <link rel="stylesheet" href="/static/web/styles.css?v=20260318-1">
+    <script type="module" src="/static/web/dashboard.js?v=20260318-1"></script>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div class="hero-card">
+          <div class="chip">Room Dashboard</div>
+          <h1 class="hero-title">Create rooms, join rooms, and manage Emby bindings in one place</h1>
+          <p class="hero-copy" id="welcome-copy">Loading user profile...</p>
+        </div>
+        <div class="panel" style="max-width: 320px; width: 100%;">
+          <div class="stack">
+            <div>
+              <div class="muted">Signed in as</div>
+              <div id="current-user" class="stat-value">-</div>
+            </div>
+            <button class="ghost" id="logout-button" type="button">Log Out</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="dashboard-grid">
+        <div class="stack">
+          <article class="panel">
+            <h2>Create Room</h2>
+            <form id="create-room-form" class="stack">
+              <label class="stack">
+                <span>Room Name</span>
+                <input id="room-name" minlength="2" required>
+              </label>
+              <label class="inline">
+                <input id="writeback-enabled" type="checkbox" style="width: auto;">
+                <span>Enable Emby progress writeback by default</span>
+              </label>
+              <button type="submit">Create Room</button>
+            </form>
+          </article>
+
+          <article class="panel">
+            <h2>Join by Invite Code</h2>
+            <form id="join-room-form" class="stack">
+              <label class="stack">
+                <span>Invite Code</span>
+                <input id="invite-code" minlength="4" maxlength="16" required>
+              </label>
+              <button type="submit">Join Room</button>
+            </form>
+          </article>
+          <p class="status-banner" id="status"></p>
+        </div>
+
+        <article class="panel">
+          <div class="section-header">
+            <div>
+              <h2 style="margin-bottom: 6px;">My Rooms</h2>
+              <div class="muted">Rooms you own or have already joined.</div>
+            </div>
+            <button id="refresh-button" class="subtle" type="button">Refresh</button>
+          </div>
+          <div id="room-list" class="room-list"></div>
+        </article>
+      </section>
+
+      <section style="margin-top: 20px;">
+        <article class="panel">
+          <div class="section-header">
+            <div>
+              <h2 style="margin-bottom: 6px;">Emby Bindings</h2>
+              <div class="muted">
+                Add, edit, and remove the Emby servers available to this user account.
+              </div>
+            </div>
+          </div>
+
+          <div class="subpanel">
+            <form id="emby-binding-form" class="stack">
+              <input id="binding-id" type="hidden">
+              <div class="form-grid">
+                <label class="stack">
+                  <span>Display Name</span>
+                  <input id="binding-display-name" minlength="2" required>
+                </label>
+                <label class="stack">
+                  <span>Server URL</span>
+                  <input id="binding-server-url" placeholder="http://emby.example.com" required>
+                </label>
+                <label class="stack">
+                  <span>Emby Username</span>
+                  <input id="binding-username" required>
+                </label>
+                <label class="stack">
+                  <span>Password</span>
+                  <input id="binding-password" type="password" autocomplete="new-password" required>
+                </label>
+              </div>
+              <div class="button-row">
+                <button id="binding-submit-button" type="submit">Add Binding</button>
+                <button id="binding-cancel-button" class="ghost" type="button" hidden>Cancel Edit</button>
+              </div>
+              <div class="muted" id="binding-form-hint">
+                A new binding validates credentials immediately before being saved.
+              </div>
+            </form>
+          </div>
+
+          <p class="status-banner" id="binding-status"></p>
+          <div id="binding-result" class="result-card" hidden>
+            <div class="section-header">
+              <div>
+                <h3 style="margin-bottom: 6px;" id="binding-result-title">Latest Validation Result</h3>
+                <div class="muted" id="binding-result-message">No validation attempt yet.</div>
+              </div>
+              <span id="binding-result-chip" class="chip">Idle</span>
+            </div>
+            <div class="form-grid">
+              <div class="result-item">
+                <div class="stat-label">Server</div>
+                <div class="entry-title" id="binding-result-server">-</div>
+              </div>
+              <div class="result-item">
+                <div class="stat-label">Account</div>
+                <div class="entry-title" id="binding-result-account">-</div>
+              </div>
+              <div class="result-item">
+                <div class="stat-label">Validated At</div>
+                <div class="entry-title" id="binding-result-validated-at">-</div>
+              </div>
+            </div>
+          </div>
+          <div id="binding-list" class="room-list" style="margin-top: 18px;"></div>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>
