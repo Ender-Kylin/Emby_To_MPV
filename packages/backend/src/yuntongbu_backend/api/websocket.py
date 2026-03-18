@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 
@@ -16,6 +17,7 @@ from ..services import ConnectionKind
 from ..services.rooms import expected_position_ms, room_members_to_response, room_to_state
 
 router = APIRouter(tags=["websocket"])
+logger = logging.getLogger(__name__)
 
 client_message_adapter = build_client_message_adapter()
 
@@ -27,6 +29,10 @@ class AuthenticatedSocketUser:
     authorized_room_id: str | None = None
     authorized_device_id: str | None = None
     authorized_device_name: str | None = None
+
+
+def requires_hard_sync_correction(sync_seek_drift_ms: int, drift_ms: int) -> bool:
+    return abs(drift_ms) >= sync_seek_drift_ms
 
 
 @router.websocket("/ws/client")
@@ -63,6 +69,7 @@ async def client_socket(websocket: WebSocket, token: str = Query(...)) -> None:
     except WebSocketDisconnect:
         await context.connections.disconnect(connection)
     except Exception:
+        logger.exception("Player websocket failed for user=%s room=%s", auth.user.id, connection.room_id)
         await context.connections.disconnect(connection)
         await websocket.close()
 
@@ -107,6 +114,7 @@ async def browser_room_socket(
     except WebSocketDisconnect:
         await context.connections.disconnect(connection)
     except Exception:
+        logger.exception("Browser websocket failed for user=%s room=%s", auth.user.id, room_id)
         await context.connections.disconnect(connection)
         await websocket.close()
 
@@ -144,7 +152,7 @@ async def _handle_state_update(context, user_id: str, connection, message: State
         room = await _authorized_room(session, room_id, user_id)
         expected = expected_position_ms(room)
         drift_ms = message.payload.state.position_ms - expected
-        if abs(drift_ms) >= context.settings.sync_small_drift_ms:
+        if requires_hard_sync_correction(context.settings.sync_seek_drift_ms, drift_ms):
             await connection.websocket.send_json(
                 SyncCorrectionMessage(
                     payload=SyncCorrectionPayload(
@@ -155,7 +163,10 @@ async def _handle_state_update(context, user_id: str, connection, message: State
                     )
                 ).model_dump(mode="json")
             )
-        await _writeback_progress_if_due(context, session, room, message)
+        try:
+            await _writeback_progress_if_due(context, session, room, message)
+        except Exception:
+            logger.exception("Emby writeback failed for room=%s", room.id)
 
 
 async def _writeback_progress_if_due(context, session: AsyncSession, room: Room, message: StateUpdate) -> None:

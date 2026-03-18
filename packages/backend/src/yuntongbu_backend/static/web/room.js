@@ -23,6 +23,7 @@ const playbackStateChipNode = document.getElementById("playback-state-chip");
 const writebackChipNode = document.getElementById("writeback-chip");
 const progressSliderNode = document.getElementById("progress-slider");
 const seekSecondsNode = document.getElementById("seek-seconds");
+const seekButtonNode = document.getElementById("seek-button");
 const memberListNode = document.getElementById("member-list");
 const mediaListNode = document.getElementById("media-list");
 const queueListNode = document.getElementById("queue-list");
@@ -56,12 +57,13 @@ let browserPlayerSocket = null;
 let browserPlayerTimerId = null;
 let browserPlayerActive = false;
 let browserPendingSeekMs = null;
+let sliderScrubbing = false;
 const browserDeviceId = getOrCreateBrowserDeviceId();
 
 document.getElementById("play-button").addEventListener("click", () => issueCommand("play"));
 document.getElementById("pause-button").addEventListener("click", () => issueCommand("pause"));
 document.getElementById("stop-button").addEventListener("click", () => issueCommand("stop"));
-document.getElementById("seek-button").addEventListener("click", () => {
+seekButtonNode.addEventListener("click", () => {
   const seconds = Number(seekSecondsNode.value || 0);
   issueCommand("seek", { position_ms: Math.max(seconds, 0) * 1000 });
 });
@@ -93,7 +95,23 @@ writebackToggleNode.addEventListener("change", async () => {
   }
 });
 progressSliderNode.addEventListener("input", () => {
-  seekSecondsNode.value = String(Math.floor(Number(progressSliderNode.value || 0) / 1000));
+  sliderScrubbing = true;
+  const previewMs = Number(progressSliderNode.value || 0);
+  seekSecondsNode.value = String(Math.floor(previewMs / 1000));
+  renderProgressText(previewMs);
+});
+progressSliderNode.addEventListener("change", async () => {
+  const targetMs = Number(progressSliderNode.value || 0);
+  seekSecondsNode.value = String(Math.floor(targetMs / 1000));
+  if (room?.is_owner) {
+    await issueCommand("seek", { position_ms: targetMs });
+  }
+  sliderScrubbing = false;
+  renderProgressText();
+});
+progressSliderNode.addEventListener("blur", () => {
+  sliderScrubbing = false;
+  renderProgressText();
 });
 itemSearchNode.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
@@ -166,6 +184,9 @@ function applyRoomMeta() {
     node.hidden = !room.is_owner;
   }
   writebackToggleNode.checked = room.writeback_enabled;
+  progressSliderNode.disabled = !room.is_owner;
+  seekSecondsNode.disabled = !room.is_owner;
+  seekButtonNode.disabled = !room.is_owner;
 }
 
 function updatePlaybackState() {
@@ -189,21 +210,25 @@ function updatePlaybackState() {
   writebackChipNode.className = `chip ${currentState.writeback_enabled ? "ok" : ""}`.trim();
   writebackToggleNode.checked = Boolean(currentState.writeback_enabled);
   progressSliderNode.max = String(media?.duration_ms || currentState.position_ms || 0);
-  progressSliderNode.value = String(currentState.position_ms || 0);
-  seekSecondsNode.value = String(Math.floor((currentState.position_ms || 0) / 1000));
-  renderProgressText();
+  if (!sliderScrubbing) {
+    progressSliderNode.value = String(currentState.position_ms || 0);
+    seekSecondsNode.value = String(Math.floor((currentState.position_ms || 0) / 1000));
+  }
+  renderProgressText(sliderScrubbing ? Number(progressSliderNode.value || 0) : null);
   renderQueue();
   startProgressTicker();
 }
 
-function renderProgressText() {
+function renderProgressText(positionOverrideMs = null) {
   if (!currentState) {
     return;
   }
   const media = currentState.current_media;
-  const livePosition = getLivePosition();
+  const livePosition = positionOverrideMs ?? getLivePosition();
   currentProgressTextNode.textContent = `${formatDuration(livePosition)} / ${formatDuration(media?.duration_ms || 0)}`;
-  progressSliderNode.value = String(Math.min(livePosition, Number(progressSliderNode.max || 0)));
+  if (!sliderScrubbing) {
+    progressSliderNode.value = String(Math.min(livePosition, Number(progressSliderNode.max || 0)));
+  }
 }
 
 function getLivePosition() {
