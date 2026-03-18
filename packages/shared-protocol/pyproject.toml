@@ -1,0 +1,13 @@
+[project]
+name = "yuntongbu-shared-protocol"
+version = "0.1.0"
+description = "Shared websocket protocol and playback models for Yuntongbu."
+requires-python = ">=3.12"
+dependencies = [
+  "pydantic>=2.11.3",
+]
+
+[build-system]
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"
+
