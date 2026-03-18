@@ -1,4 +1,4 @@
-import { apiFetch, loadSession, readNextDestination, saveSession, setStatus } from "/static/web/common.js";
+import { apiFetch, loadSession, readNextDestination, saveSession, setStatus } from "/static/web/common.js?v=20260318-zh1";
 
 const form = document.getElementById("login-form");
 const statusNode = document.getElementById("status");
@@ -9,7 +9,7 @@ if (loadSession()?.access_token) {
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  setStatus(statusNode, "Signing in...");
+  setStatus(statusNode, "正在登录...");
   const payload = {
     username_or_email: document.getElementById("username").value.trim(),
     password: document.getElementById("password").value,
@@ -26,7 +26,7 @@ form.addEventListener("submit", async (event) => {
       refresh_token: response.refresh_token,
       user: response.user,
     });
-    setStatus(statusNode, "Login successful. Redirecting...", "success");
+    setStatus(statusNode, "登录成功，正在跳转...", "success");
     window.location.href = readNextDestination("/app/dashboard");
   } catch (error) {
     setStatus(statusNode, error.message, "error");

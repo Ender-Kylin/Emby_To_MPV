@@ -1,56 +1,56 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Yuntongbu Register</title>
-    <link rel="stylesheet" href="/static/web/styles.css?v=20260318-1">
-    <script type="module" src="/static/web/register.js?v=20260318-1"></script>
+    <title>云同步注册</title>
+    <link rel="stylesheet" href="/static/web/styles.css?v=20260318-zh1">
+    <script type="module" src="/static/web/register.js?v=20260318-zh1"></script>
   </head>
   <body>
     <main class="shell">
       <section class="hero">
         <div class="hero-card">
-          <div class="chip">Create Account</div>
-          <h1 class="hero-title">Register a user before binding Emby and entering rooms</h1>
+          <div class="chip">创建账号</div>
+          <h1 class="hero-title">先注册账号，再绑定 Emby 并进入同步房间</h1>
           <p class="hero-copy">
-            Your account stores room memberships, Emby credentials, and playback management access.
+            账号会保存你的房间成员关系、Emby 凭证和播放管理权限。
           </p>
         </div>
       </section>
 
       <section class="auth-grid">
         <div class="panel">
-          <h2>Register</h2>
+          <h2>注册</h2>
           <form id="register-form" class="stack">
             <label class="stack">
-              <span>Username</span>
+              <span>用户名</span>
               <input id="username" name="username" minlength="3" required>
             </label>
             <label class="stack">
-              <span>Email</span>
+              <span>邮箱</span>
               <input id="email" name="email" type="email" autocomplete="email">
             </label>
             <label class="stack">
-              <span>Password</span>
+              <span>密码</span>
               <input id="password" name="password" type="password" minlength="8" autocomplete="new-password" required>
             </label>
             <label class="stack">
-              <span>Confirm Password</span>
+              <span>确认密码</span>
               <input id="password-confirm" name="password-confirm" type="password" minlength="8" autocomplete="new-password" required>
             </label>
-            <button type="submit">Register</button>
+            <button type="submit">注册</button>
           </form>
           <p class="status-banner" id="status"></p>
         </div>
 
         <div class="panel">
-          <h2>Already registered?</h2>
+          <h2>已经注册过？</h2>
           <p class="muted">
-            Return to the login page if you already have an account.
+            如果已经有账号，可以直接返回登录页。
           </p>
           <div class="stack">
-            <a href="/app/login">Back to login</a>
+            <a href="/app/login">返回登录</a>
           </div>
         </div>
       </section>

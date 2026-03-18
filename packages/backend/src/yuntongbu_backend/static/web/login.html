@@ -1,50 +1,50 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Yuntongbu Login</title>
-    <link rel="stylesheet" href="/static/web/styles.css?v=20260318-5">
-    <script type="module" src="/static/web/login.js?v=20260318-5"></script>
+    <title>云同步登录</title>
+    <link rel="stylesheet" href="/static/web/styles.css?v=20260318-zh1">
+    <script type="module" src="/static/web/login.js?v=20260318-zh1"></script>
   </head>
   <body>
     <main class="shell">
       <section class="hero">
         <div class="hero-card">
-          <div class="chip">Web Console</div>
-          <h1 class="hero-title">Sign in to manage rooms, Emby bindings, and sync state</h1>
+          <div class="chip">网页控制台</div>
+          <h1 class="hero-title">登录后即可管理房间、Emby 绑定和同步状态</h1>
           <p class="hero-copy">
-            The browser manages users, rooms, and media selection. Windows clients still handle local
-            `mpv` playback and synchronized playback execution.
+            浏览器负责用户、房间和媒体选择。Windows 客户端仍然负责本地 `mpv`
+            播放和同步执行。
           </p>
         </div>
       </section>
 
       <section class="auth-grid">
         <div class="panel">
-          <h2>Login</h2>
+          <h2>登录</h2>
           <form id="login-form" class="stack">
             <label class="stack">
-              <span>Username or Email</span>
+              <span>用户名或邮箱</span>
               <input id="username" name="username" autocomplete="username" required>
             </label>
             <label class="stack">
-              <span>Password</span>
+              <span>密码</span>
               <input id="password" name="password" type="password" autocomplete="current-password" required>
             </label>
-            <button type="submit">Login</button>
+            <button type="submit">登录</button>
           </form>
           <p class="status-banner" id="status"></p>
         </div>
 
         <div class="panel">
-          <h2>Need an account?</h2>
+          <h2>还没有账号？</h2>
           <p class="muted">
-            Register first, then add your Emby servers and join a sync room.
+            先注册账号，再添加 Emby 服务器并加入同步房间。
           </p>
           <div class="stack">
-            <a href="/app/register">Go to registration</a>
-            <a href="/docs" target="_blank" rel="noreferrer">Open backend API docs</a>
+            <a href="/app/register">前往注册</a>
+            <a href="/docs" target="_blank" rel="noreferrer">打开后端 API 文档</a>
           </div>
         </div>
       </section>

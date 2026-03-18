@@ -1,4 +1,4 @@
-import { apiFetch, loadSession, saveSession, setStatus } from "/static/web/common.js";
+import { apiFetch, loadSession, saveSession, setStatus } from "/static/web/common.js?v=20260318-zh1";
 
 const form = document.getElementById("register-form");
 const statusNode = document.getElementById("status");
@@ -12,11 +12,11 @@ form.addEventListener("submit", async (event) => {
   const password = document.getElementById("password").value;
   const confirm = document.getElementById("password-confirm").value;
   if (password !== confirm) {
-    setStatus(statusNode, "Passwords do not match.", "error");
+    setStatus(statusNode, "两次输入的密码不一致。", "error");
     return;
   }
 
-  setStatus(statusNode, "Creating account...");
+  setStatus(statusNode, "正在创建账号...");
   try {
     const response = await apiFetch("/auth/register", {
       method: "POST",
@@ -32,7 +32,7 @@ form.addEventListener("submit", async (event) => {
       refresh_token: response.refresh_token,
       user: response.user,
     });
-    setStatus(statusNode, "Registration successful. Redirecting...", "success");
+    setStatus(statusNode, "注册成功，正在跳转...", "success");
     window.location.href = "/app/dashboard";
   } catch (error) {
     setStatus(statusNode, error.message, "error");

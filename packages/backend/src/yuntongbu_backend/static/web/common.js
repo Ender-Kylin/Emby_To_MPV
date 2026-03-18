@@ -1,5 +1,13 @@
 const SESSION_KEY = "yuntongbu.web.session";
 
+const PLAYBACK_STATE_LABELS = {
+  stopped: "已停止",
+  playing: "播放中",
+  paused: "已暂停",
+  buffering: "缓冲中",
+  error: "异常",
+};
+
 export function loadSession() {
   const raw = window.localStorage.getItem(SESSION_KEY);
   if (!raw) {
@@ -40,7 +48,7 @@ export async function requireUser() {
   const session = loadSession();
   if (!session?.access_token) {
     redirectToLogin();
-    throw new Error("Missing session.");
+    throw new Error("未找到登录会话。");
   }
   try {
     return await apiFetch("/auth/me");
@@ -102,7 +110,7 @@ export async function apiFetch(path, options = {}) {
     session = await refreshSession(session);
     if (!session?.access_token) {
       redirectToLogin();
-      throw new Error("401 Unauthorized");
+      throw new Error("401 未授权");
     }
     headers.Authorization = `Bearer ${session.access_token}`;
     response = await fetch(path, {
@@ -157,10 +165,10 @@ function formatValidationItem(item) {
   }
   const loc = Array.isArray(item.loc) ? item.loc.filter((part) => part !== "body").join(".") : "field";
   if (item.type === "missing") {
-    return `${loc || "field"} is required`;
+    return `${loc || "字段"} 为必填项`;
   }
   if (item.type === "string_too_short" && item.ctx?.min_length) {
-    return `${loc || "field"} must be at least ${item.ctx.min_length} characters`;
+    return `${loc || "字段"} 至少需要 ${item.ctx.min_length} 个字符`;
   }
   return item.msg || JSON.stringify(item);
 }
@@ -180,6 +188,10 @@ export function formatDuration(totalMs) {
     return `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   }
   return `${minutes}:${String(seconds).padStart(2, "0")}`;
+}
+
+export function displayPlaybackState(state) {
+  return PLAYBACK_STATE_LABELS[state] || state || "未知";
 }
 
 export function setStatus(element, message, kind = "info") {

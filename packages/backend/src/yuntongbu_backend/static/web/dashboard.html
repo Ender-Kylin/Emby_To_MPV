@@ -1,27 +1,27 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Yuntongbu Dashboard</title>
-    <link rel="stylesheet" href="/static/web/styles.css?v=20260318-2">
-    <script type="module" src="/static/web/dashboard.js?v=20260318-2"></script>
+    <title>云同步控制台</title>
+    <link rel="stylesheet" href="/static/web/styles.css?v=20260318-zh1">
+    <script type="module" src="/static/web/dashboard.js?v=20260318-zh1"></script>
   </head>
   <body>
     <main class="shell">
       <section class="hero">
         <div class="hero-card">
-          <div class="chip">Room Dashboard</div>
-          <h1 class="hero-title">Create rooms, join rooms, and manage Emby bindings in one place</h1>
-          <p class="hero-copy" id="welcome-copy">Loading user profile...</p>
+          <div class="chip">房间控制台</div>
+          <h1 class="hero-title">在一个界面里创建房间、加入房间并管理 Emby 绑定</h1>
+          <p class="hero-copy" id="welcome-copy">正在加载用户资料...</p>
         </div>
         <div class="panel" style="max-width: 320px; width: 100%;">
           <div class="stack">
             <div>
-              <div class="muted">Signed in as</div>
+              <div class="muted">当前登录</div>
               <div id="current-user" class="stat-value">-</div>
             </div>
-            <button class="ghost" id="logout-button" type="button">Log Out</button>
+            <button class="ghost" id="logout-button" type="button">退出登录</button>
           </div>
         </div>
       </section>
@@ -29,28 +29,28 @@
       <section class="dashboard-grid">
         <div class="stack">
           <article class="panel">
-            <h2>Create Room</h2>
+            <h2>创建房间</h2>
             <form id="create-room-form" class="stack">
               <label class="stack">
-                <span>Room Name</span>
+                <span>房间名称</span>
                 <input id="room-name" minlength="2" required>
               </label>
               <label class="inline">
                 <input id="writeback-enabled" type="checkbox" style="width: auto;">
-                <span>Enable Emby progress writeback by default</span>
+                <span>默认开启 Emby 进度回写</span>
               </label>
-              <button type="submit">Create Room</button>
+              <button type="submit">创建房间</button>
             </form>
           </article>
 
           <article class="panel">
-            <h2>Join by Invite Code</h2>
+            <h2>通过邀请码加入</h2>
             <form id="join-room-form" class="stack">
               <label class="stack">
-                <span>Invite Code</span>
+                <span>邀请码</span>
                 <input id="invite-code" minlength="4" maxlength="16" required>
               </label>
-              <button type="submit">Join Room</button>
+              <button type="submit">加入房间</button>
             </form>
           </article>
           <p class="status-banner" id="status"></p>
@@ -59,10 +59,10 @@
         <article class="panel">
           <div class="section-header">
             <div>
-              <h2 style="margin-bottom: 6px;">My Rooms</h2>
-              <div class="muted">Rooms you own or have already joined.</div>
+              <h2 style="margin-bottom: 6px;">我的房间</h2>
+              <div class="muted">这里会显示你创建过或已经加入的房间。</div>
             </div>
-            <button id="refresh-button" class="subtle" type="button">Refresh</button>
+            <button id="refresh-button" class="subtle" type="button">刷新</button>
           </div>
           <div id="room-list" class="room-list"></div>
         </article>
@@ -72,9 +72,9 @@
         <article class="panel">
           <div class="section-header">
             <div>
-              <h2 style="margin-bottom: 6px;">Emby Bindings</h2>
+              <h2 style="margin-bottom: 6px;">Emby 绑定</h2>
               <div class="muted">
-                Add, edit, and remove the Emby servers available to this user account.
+                为当前账号添加、编辑和删除可用的 Emby 服务器。
               </div>
             </div>
           </div>
@@ -84,28 +84,28 @@
               <input id="binding-id" type="hidden">
               <div class="form-grid">
                 <label class="stack">
-                  <span>Display Name</span>
+                  <span>显示名称</span>
                   <input id="binding-display-name" minlength="2" required>
                 </label>
                 <label class="stack">
-                  <span>Server URL</span>
+                  <span>服务器地址</span>
                   <input id="binding-server-url" placeholder="http://emby.example.com" required>
                 </label>
                 <label class="stack">
-                  <span>Emby Username</span>
+                  <span>Emby 用户名</span>
                   <input id="binding-username" required>
                 </label>
                 <label class="stack">
-                  <span>Password</span>
+                  <span>密码</span>
                   <input id="binding-password" type="password" autocomplete="new-password" required>
                 </label>
               </div>
               <div class="button-row">
-                <button id="binding-submit-button" type="submit">Add Binding</button>
-                <button id="binding-cancel-button" class="ghost" type="button" hidden>Cancel Edit</button>
+                <button id="binding-submit-button" type="submit">添加绑定</button>
+                <button id="binding-cancel-button" class="ghost" type="button" hidden>取消编辑</button>
               </div>
               <div class="muted" id="binding-form-hint">
-                A new binding validates credentials immediately before being saved.
+                新建绑定会在保存前立即校验连接和账号密码。
               </div>
             </form>
           </div>
@@ -114,22 +114,22 @@
           <div id="binding-result" class="result-card" hidden>
             <div class="section-header">
               <div>
-                <h3 style="margin-bottom: 6px;" id="binding-result-title">Latest Validation Result</h3>
-                <div class="muted" id="binding-result-message">No validation attempt yet.</div>
+                <h3 style="margin-bottom: 6px;" id="binding-result-title">最近一次校验结果</h3>
+                <div class="muted" id="binding-result-message">暂时还没有进行校验。</div>
               </div>
-              <span id="binding-result-chip" class="chip">Idle</span>
+              <span id="binding-result-chip" class="chip">空闲</span>
             </div>
             <div class="form-grid">
               <div class="result-item">
-                <div class="stat-label">Server</div>
+                <div class="stat-label">服务器</div>
                 <div class="entry-title" id="binding-result-server">-</div>
               </div>
               <div class="result-item">
-                <div class="stat-label">Account</div>
+                <div class="stat-label">账号</div>
                 <div class="entry-title" id="binding-result-account">-</div>
               </div>
               <div class="result-item">
-                <div class="stat-label">Validated At</div>
+                <div class="stat-label">校验时间</div>
                 <div class="entry-title" id="binding-result-validated-at">-</div>
               </div>
             </div>
