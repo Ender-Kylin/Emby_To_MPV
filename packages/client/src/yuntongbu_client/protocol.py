@@ -6,8 +6,21 @@ from pathlib import Path
 from .system_integration import PROTOCOL_KEY, is_frozen_bundle
 
 
+def preferred_protocol_executable(executable: Path | None = None) -> Path:
+    if executable is not None:
+        return executable
+    current = Path(sys.executable).resolve()
+    if is_frozen_bundle():
+        return current
+    if current.name.lower() == "python.exe":
+        pythonw = current.with_name("pythonw.exe")
+        if pythonw.is_file():
+            return pythonw
+    return current
+
+
 def protocol_command(executable: Path | None = None) -> str:
-    target = executable or Path(sys.executable).resolve()
+    target = preferred_protocol_executable(executable)
     if is_frozen_bundle() or executable is not None:
         return f'"{target}" --deeplink "%1"'
     return f'"{target}" -m yuntongbu_client.app --deeplink "%1"'
@@ -19,7 +32,7 @@ def register_protocol_handler(executable: Path | None = None) -> bool:
 
     import winreg
 
-    target = executable or Path(sys.executable).resolve()
+    target = preferred_protocol_executable(executable)
     command = protocol_command(executable)
 
     with winreg.CreateKey(winreg.HKEY_CURRENT_USER, PROTOCOL_KEY) as key:

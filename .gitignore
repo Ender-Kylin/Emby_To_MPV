@@ -1,0 +1,29 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.pyc
+*.pyo
+*.pyd
+*.db
+.data/
+.secrets/
+logs/
+
+# local workflow / generated artifacts
+.spec-workflow/
+*.tar
+
+# do not push desktop client source
+packages/client/
+tests/test_client_*.py
+
+# do not push packaging assets or installer scripts
+packaging/
+scripts/build_client.py
+scripts/build_client.ps1

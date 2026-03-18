@@ -38,6 +38,24 @@ from .setup_flow import apply_client_integration, maybe_run_portable_bootstrap
 from .sync import SyncWorker
 
 
+def apply_playback_snapshot_to_mpv(mpv: MpvController, playback: dict | None) -> bool:
+    if not playback:
+        return False
+    current_media = playback.get("current_media")
+    media_url = current_media.get("media_url") if isinstance(current_media, dict) else None
+    if not media_url:
+        return False
+    position_ms = int(playback.get("position_ms", 0) or 0)
+    if media_url != mpv.current_url():
+        mpv.load_media(media_url, position_ms)
+    playback_state = str(playback.get("playback_state") or "").lower()
+    if playback_state == "paused":
+        mpv.pause()
+    elif playback_state == "playing":
+        mpv.play()
+    return True
+
+
 @dataclass(slots=True)
 class ActiveSession:
     backend_url: str
@@ -345,6 +363,12 @@ class HelperRuntime(QObject):
         self._stop_worker()
         self._settings.mpv_pipe_name = default_mpv_pipe_name()
         self._mpv.ensure_running()
+        playback = redeemed.get("playback")
+        if apply_playback_snapshot_to_mpv(self._mpv, playback):
+            current_media = playback.get("current_media") or {}
+            self._logger.info("Primed mpv from handoff playback: %s", current_media.get("media_url"))
+        else:
+            self._logger.info("Handoff playback contained no current media to load.")
         self._active_session = ActiveSession(
             backend_url=backend_url,
             room_id=redeemed["room_id"],

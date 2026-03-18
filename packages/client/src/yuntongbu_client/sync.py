@@ -23,6 +23,23 @@ from yuntongbu_shared_protocol import (
 from .backend_api import BackendAPI
 from .mpv import MpvController
 
+SYNC_CORRECTION_INTERVAL_SECONDS = 30.0
+SYNC_CORRECTION_MIN_DRIFT_MS = 60_000
+
+
+def can_apply_sync_correction(
+    *,
+    now: float,
+    last_sync_seek_at: float,
+    delay_active: bool,
+    drift_ms: int,
+) -> bool:
+    return (
+        not delay_active
+        and abs(drift_ms) >= SYNC_CORRECTION_MIN_DRIFT_MS
+        and (now - last_sync_seek_at) >= SYNC_CORRECTION_INTERVAL_SECONDS
+    )
+
 
 class SyncWorker(QThread):
     status_changed = Signal(str)
@@ -47,6 +64,7 @@ class SyncWorker(QThread):
         self._device_name = device_name
         self._stop = Event()
         self._adapter = build_server_message_adapter()
+        self._last_sync_seek_at = 0.0
 
     def stop(self) -> None:
         self._stop.set()
@@ -136,6 +154,15 @@ class SyncWorker(QThread):
             self._apply_command(message)
             return
         if isinstance(message, SyncCorrectionMessage):
+            now = time.monotonic()
+            if not can_apply_sync_correction(
+                now=now,
+                last_sync_seek_at=self._last_sync_seek_at,
+                delay_active=self._mpv.should_delay_sync_correction(),
+                drift_ms=message.payload.drift_ms,
+            ):
+                return
+            self._last_sync_seek_at = now
             self._mpv.seek_absolute(message.payload.expected_position_ms)
             return
         self.status_changed.emit(message.payload.message)

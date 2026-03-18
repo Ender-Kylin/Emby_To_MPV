@@ -29,6 +29,8 @@ class MpvController(QObject):
         self._pipe = None
         self._process: subprocess.Popen | None = None
         self._last_loaded_url: str | None = None
+        self._last_load_started_at = 0.0
+        self._last_seek_at = 0.0
         self._state = {
             "playback_state": PlaybackState.STOPPED.value,
             "position_ms": 0,
@@ -59,6 +61,10 @@ class MpvController(QObject):
                     executable,
                     "--idle=yes",
                     "--force-window=yes",
+                    "--cache=yes",
+                    "--demuxer-max-bytes=128M",
+                    "--demuxer-max-back-bytes=32M",
+                    "--demuxer-readahead-secs=20",
                     f"--input-ipc-server={self._settings.mpv_pipe_name}",
                 ],
                 stdout=subprocess.DEVNULL,
@@ -105,6 +111,7 @@ class MpvController(QObject):
     def load_media(self, media_url: str, position_ms: int = 0) -> None:
         self.ensure_running()
         self._last_loaded_url = media_url
+        self._last_load_started_at = time.monotonic()
         self._send_command(["loadfile", media_url, "replace"])
         if position_ms > 0:
             time.sleep(0.15)
@@ -124,6 +131,7 @@ class MpvController(QObject):
         self._update_state(playback_state=PlaybackState.STOPPED.value, paused=False, position_ms=0)
 
     def seek_absolute(self, position_ms: int) -> None:
+        self._last_seek_at = time.monotonic()
         self._send_command(["seek", max(position_ms / 1000.0, 0.0), "absolute"])
         self._update_state(position_ms=max(position_ms, 0))
 
@@ -220,6 +228,10 @@ class MpvController(QObject):
     def resolved_mpv_source_label(self) -> str:
         _, source = self.resolved_mpv_details()
         return source_label(source)
+
+    def should_delay_sync_correction(self) -> bool:
+        now = time.monotonic()
+        return (now - self._last_load_started_at) < 4.0 or (now - self._last_seek_at) < 2.5
 
     def _resolved_mpv_executable(self) -> str | None:
         resolved, _ = self.resolved_mpv_details()
